@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
 class WorldPanel extends StatelessWidget {
+  final Map worldData;
+  const WorldPanel({Key key, this.worldData}) : super(key: key);
+
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -8,31 +12,31 @@ class WorldPanel extends StatelessWidget {
         shrinkWrap: true,
         //prevent scrolling
         physics: NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 2),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 1, childAspectRatio: 4),
         children: <Widget>[
           StatusPanel(
             title: 'CONFIRMED:',
             panelColor: Colors.red[100],
             textColor: Colors.red,
-            count: '1222',
+            count: worldData['cases'].toString(),
           ),
           StatusPanel(
             title: 'ACTIVE:',
             panelColor: Colors.blue[100],
             textColor: Colors.blue[900],
-            count: '888',
+            count: worldData['active'].toString(),
           ),
           StatusPanel(
             title: 'RECOVERED:',
             panelColor: Colors.green[100],
             textColor: Colors.green,
-            count: '1222',
+            count: worldData['recovered'].toString(),
           ),
           StatusPanel(
             title: 'CONFIRMED:',
             panelColor: Colors.grey[400],
             textColor: Colors.grey[900],
-            count: '1222',
+            count: worldData['todayCases'].toString(),
           ),
         ]
       )
@@ -58,11 +62,12 @@ class StatusPanel extends StatelessWidget {
     double width = MediaQuery.of(context).size.width;
     return Container(
       margin: EdgeInsets.all(10),
-      height: 80, width: width/2,
+      height: 80, width: width,
       color: panelColor,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor)),Text(count, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor))]
+        children: <Widget>[Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22, color: textColor)),
+          Text(count, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor))]
       )
     );
   }
