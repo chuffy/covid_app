@@ -1,9 +1,13 @@
 import 'dart:convert';
 
+import 'package:covid_app/country_page.dart';
+import 'package:covid_app/panels/country_panel.dart';
 import 'package:covid_app/panels/world_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_svg/flutter_svg.dart';
+
+import 'datasource.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -30,10 +34,20 @@ class _HomePageState extends State<HomePage> {
       });
     }
 
+  List countryData;
+  fetchCountryData() async{
+    http.Response response = await http.get('https://disease.sh/v3/covid-19/countries?sort=todayCases');
+    setState(() {
+      countryData = json.decode(response.body);
+      print(countryData);
+    });
+  }
+
 
     @override
   void initState() {
     fetchWorldWideData();
+    fetchCountryData();
     super.initState();
   }
 
@@ -50,17 +64,36 @@ class _HomePageState extends State<HomePage> {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-            child: Text('WORLDWIDE', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget> [
+              Text('Worldwide', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),),
+              //country button
+              GestureDetector(
+                onTap: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>CountryPage()));
+                },
+                child: Container(decoration: BoxDecoration(
+                            color: primaryBlack,
+                            borderRadius: BorderRadius.circular(15)
+                          ),
+                          padding: EdgeInsets.all(10),
+                          child: Text('Country', style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),)),
+              ),
+                ],
+             ),
           ),
           Center(child: globe_svg),
           //show progress indicator if data hasn't loaded yet
           worldData==null?CircularProgressIndicator():WorldPanel(worldData: worldData),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-            child: Text('COUNTRY', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+            child: Text('Today', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
 
           ),
-          Center(child: country_svg)
+          Center(child: country_svg ),
+          SizedBox(height: 10,),
+          countryData == null ? Container(): MostAffectedPanel(countryData: countryData,)
         ]
       ))
     );
